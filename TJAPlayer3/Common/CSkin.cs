@@ -203,8 +203,6 @@ namespace TJAPlayer3
 
                 for (int i = 0; i < 2; i++)     // 一旦Cloneを止めてASIO対応に専念
                 {
-
-#if !DEBUG
                     try
                     {
                         this.rSound[i] = TJAPlayer3.Sound管理.tサウンドを生成する(CSkin.Path(this.strファイル名), _soundGroup);
@@ -214,9 +212,6 @@ namespace TJAPlayer3
                         this.rSound[i] = null;
                         throw;
                     }
-#else //note debugビルドだと↑でぬるぽするのでそれの回避
-                    this.rSound[i] = null;
-#endif
                 }
                 this.b読み込み成功 = true;
             }
@@ -274,7 +269,7 @@ namespace TJAPlayer3
                 }
             }
 
-#region [ IDisposable 実装 ]
+            #region [ IDisposable 実装 ]
             //-----------------
             public void Dispose()
             {
@@ -293,15 +288,15 @@ namespace TJAPlayer3
                 }
             }
             //-----------------
-#endregion
+            #endregion
 
-#region [ private ]
+            #region [ private ]
             //-----------------
             private bool bDisposed済み;
             private int n次に鳴るサウンド番号;
             private CSound[] rSound = new CSound[2];
             //-----------------
-#endregion
+            #endregion
         }
 
 
@@ -674,17 +669,17 @@ namespace TJAPlayer3
         /// </summary>
         public void ReloadSkinPaths()
         {
-#region [ まず System/*** をenumerateする ]
+            #region [ まず System/*** をenumerateする ]
             string[] tempSkinSubfolders = System.IO.Directory.GetDirectories(strSystemSkinRoot, "*");
             strSystemSkinSubfolders = new string[tempSkinSubfolders.Length];
             int size = 0;
             for (int i = 0; i < tempSkinSubfolders.Length; i++)
             {
-#region [ 検出したフォルダがスキンフォルダかどうか確認する]
+                #region [ 検出したフォルダがスキンフォルダかどうか確認する]
                 if (!bIsValid(tempSkinSubfolders[i]))
                     continue;
-#endregion
-#region [ スキンフォルダと確認できたものを、strSkinSubfoldersに入れる ]
+                #endregion
+                #region [ スキンフォルダと確認できたものを、strSkinSubfoldersに入れる ]
                 // フォルダ名末尾に必ず\をつけておくこと。さもないとConfig読み出し側(必ず\をつける)とマッチできない
                 if (tempSkinSubfolders[i][tempSkinSubfolders[i].Length - 1] != System.IO.Path.DirectorySeparatorChar)
                 {
@@ -693,14 +688,14 @@ namespace TJAPlayer3
                 strSystemSkinSubfolders[size] = tempSkinSubfolders[i];
                 Trace.TraceInformation("SkinPath検出: {0}", strSystemSkinSubfolders[size]);
                 size++;
-#endregion
+                #endregion
             }
             Trace.TraceInformation("SkinPath入力: {0}", strSystemSkinSubfolderFullName);
             Array.Resize(ref strSystemSkinSubfolders, size);
             Array.Sort(strSystemSkinSubfolders);    // BinarySearch実行前にSortが必要
-#endregion
+            #endregion
 
-#region [ 現在のSkinパスがbox.defスキンをCONFIG指定していた場合のために、最初にこれが有効かチェックする。有効ならこれを使う。 ]
+            #region [ 現在のSkinパスがbox.defスキンをCONFIG指定していた場合のために、最初にこれが有効かチェックする。有効ならこれを使う。 ]
             if (bIsValid(strSystemSkinSubfolderFullName) &&
                 Array.BinarySearch(strSystemSkinSubfolders, strSystemSkinSubfolderFullName,
                 StringComparer.InvariantCultureIgnoreCase) < 0)
@@ -708,19 +703,19 @@ namespace TJAPlayer3
                 strBoxDefSkinSubfolders = new string[1] { strSystemSkinSubfolderFullName };
                 return;
             }
-#endregion
+            #endregion
 
-#region [ 次に、現在のSkinパスが存在するか調べる。あれば終了。]
+            #region [ 次に、現在のSkinパスが存在するか調べる。あれば終了。]
             if (Array.BinarySearch(strSystemSkinSubfolders, strSystemSkinSubfolderFullName,
                 StringComparer.InvariantCultureIgnoreCase) >= 0)
                 return;
-#endregion
-#region [ カレントのSkinパスが消滅しているので、以下で再設定する。]
+            #endregion
+            #region [ カレントのSkinパスが消滅しているので、以下で再設定する。]
             /// 以下の優先順位で現在使用中のSkinパスを再設定する。
             /// 1. System/Default/
             /// 2. System/*****/ で最初にenumerateされたもの
             /// 3. System/ (従来互換)
-#region [ System/Default/ があるなら、そこにカレントSkinパスを設定する]
+            #region [ System/Default/ があるなら、そこにカレントSkinパスを設定する]
             string tempSkinPath_default = System.IO.Path.Combine(strSystemSkinRoot, "Default" + System.IO.Path.DirectorySeparatorChar);
             if (Array.BinarySearch(strSystemSkinSubfolders, tempSkinPath_default,
                 StringComparer.InvariantCultureIgnoreCase) >= 0)
@@ -728,19 +723,19 @@ namespace TJAPlayer3
                 strSystemSkinSubfolderFullName = tempSkinPath_default;
                 return;
             }
-#endregion
-#region [ System/SkinFiles.*****/ で最初にenumerateされたものを、カレントSkinパスに再設定する ]
+            #endregion
+            #region [ System/SkinFiles.*****/ で最初にenumerateされたものを、カレントSkinパスに再設定する ]
             if (strSystemSkinSubfolders.Length > 0)
             {
                 strSystemSkinSubfolderFullName = strSystemSkinSubfolders[0];
                 return;
             }
-#endregion
-#region [ System/ に、カレントSkinパスを再設定する。]
+            #endregion
+            #region [ System/ に、カレントSkinパスを再設定する。]
             strSystemSkinSubfolderFullName = strSystemSkinRoot;
             strSystemSkinSubfolders = new string[1] { strSystemSkinSubfolderFullName };
-#endregion
-#endregion
+            #endregion
+            #endregion
         }
 
         // メソッド
@@ -884,7 +879,7 @@ namespace TJAPlayer3
                             strCommand = strArray[0].Trim();
                             strParam = strArray[1].Trim();
 
-#region スキン設定
+                            #region スキン設定
 
                             void ParseInt32(Action<int> setValue)
                             {
@@ -910,9 +905,9 @@ namespace TJAPlayer3
                             {
                                 this.Skin_Creator = strParam;
                             }
-#endregion
+                            #endregion
 
-#region 背景(スクロール)
+                            #region 背景(スクロール)
                             else if (strCommand == "Background_Scroll_Y")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -921,9 +916,9 @@ namespace TJAPlayer3
                                     this.Background_Scroll_Y[i] = int.Parse(strSplit[i]);
                                 }
                             }
-#endregion
+                            #endregion
 
-#region[ 演奏 ]
+                            #region[ 演奏 ]
                             //-----------------------------
                             else if (strCommand == "ScrollFieldP1Y")
                             {
@@ -960,8 +955,8 @@ namespace TJAPlayer3
                             }
 
                             //-----------------------------
-#endregion
-#region[ 成績発表 ]
+                            #endregion
+                            #region[ 成績発表 ]
                             //-----------------------------
                             else if (strCommand == "ResultPanelP1X")
                             {
@@ -988,12 +983,12 @@ namespace TJAPlayer3
                                 this.nResultScoreP1Y = C変換.n値を文字列から取得して返す(strParam, 252);
                             }
                             //-----------------------------
-#endregion
-#region[ その他 ]
-#endregion
+                            #endregion
+                            #region[ その他 ]
+                            #endregion
 
-#region 新・SkinConfig
-#region Config
+                            #region 新・SkinConfig
+                            #region Config
                             else if (strCommand == nameof(Config_ItemText_Correction_X))
                             {
                                 Config_ItemText_Correction_X = int.Parse(strParam);
@@ -1002,8 +997,8 @@ namespace TJAPlayer3
                             {
                                 Config_ItemText_Correction_Y = int.Parse(strParam);
                             }
-#endregion
-#region SongSelect
+                            #endregion
+                            #region SongSelect
                             else if (strCommand == "SongSelect_Overall_Y")
                             {
                                 if (int.Parse(strParam) != 0)
@@ -1127,8 +1122,8 @@ namespace TJAPlayer3
                             {
                                 SongSelect_Rotate_Chara = strParam.Split(',').ToArray();
                             }
-#endregion
-#region SongLoading
+                            #endregion
+                            #region SongLoading
                             else if (strCommand == nameof(SongLoading_Plate_X))
                             {
                                 SongLoading_Plate_X = int.Parse(strParam);
@@ -1196,8 +1191,8 @@ namespace TJAPlayer3
                             {
                                 SongLoading_Plate_ScreenBlend = C変換.bONorOFF(strParam[0]);
                             }
-#endregion
-#region Game
+                            #endregion
+                            #region Game
                             else if (strCommand == "Game_Notes_Anime")
                             {
                                 Game_Notes_Anime = C変換.bONorOFF(strParam[0]);
@@ -1215,7 +1210,7 @@ namespace TJAPlayer3
                                 Game_JudgeFrame_AddBlend = C変換.bONorOFF(strParam[0]);
                             }
 
-#region CourseSymbol
+                            #region CourseSymbol
                             else if (strCommand == "Game_CourseSymbol_X")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -1232,8 +1227,8 @@ namespace TJAPlayer3
                                     Game_CourseSymbol_Y[i] = int.Parse(strSplit[i]);
                                 }
                             }
-#endregion
-#region PanelFont
+                            #endregion
+                            #region PanelFont
                             else if (strCommand == nameof(Game_MusicName_X))
                             {
                                 Game_MusicName_X = int.Parse(strParam);
@@ -1305,8 +1300,8 @@ namespace TJAPlayer3
                             {
                                 Game_Lyric_BackColor = ColorTranslator.FromHtml(strParam);
                             }
-#endregion
-#region Chara
+                            #endregion
+                            #region Chara
                             else if (strCommand == "Game_Chara_X")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -1379,8 +1374,8 @@ namespace TJAPlayer3
                             {
                                 ParseInt32(value => Game_Chara_Beat_GoGo = value);
                             }
-#endregion
-#region Dancer
+                            #endregion
+                            #region Dancer
                             else if (strCommand == "Game_Dancer_X")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -1414,8 +1409,8 @@ namespace TJAPlayer3
                                     Game_Dancer_Gauge[i] = int.Parse(strSplit[i]);
                                 }
                             }
-#endregion
-#region Mob
+                            #endregion
+                            #region Mob
                             else if (strCommand == "Game_Mob_Beat")
                             {
                                 ParseInt32(value => Game_Mob_Beat = value);
@@ -1424,8 +1419,8 @@ namespace TJAPlayer3
                             {
                                 ParseInt32(value => Game_Mob_Ptn_Beat = value);
                             }
-#endregion
-#region Score
+                            #endregion
+                            #region Score
                             else if (strCommand == "Game_Score_X")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -1487,8 +1482,8 @@ namespace TJAPlayer3
                                     Game_Score_Size[i] = int.Parse(strSplit[i]);
                                 }
                             }
-#endregion
-#region Taiko
+                            #endregion
+                            #region Taiko
                             else if (strCommand == "Game_Taiko_NamePlate_X")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -1648,8 +1643,8 @@ namespace TJAPlayer3
                             {
                                 Game_Taiko_Combo_Ex_IsJumping = C変換.bONorOFF(strParam[0]);
                             }
-#endregion
-#region Gauge
+                            #endregion
+                            #region Gauge
                             else if (strCommand == "Game_Gauge_Rainbow_Timer")
                             {
                                 if (int.Parse(strParam) != 0)
@@ -1657,8 +1652,8 @@ namespace TJAPlayer3
                                     Game_Gauge_Rainbow_Timer = int.Parse(strParam);
                                 }
                             }
-#endregion
-#region Balloon
+                            #endregion
+                            #region Balloon
                             else if (strCommand == "Game_Balloon_Combo_X")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -1843,8 +1838,8 @@ namespace TJAPlayer3
                                 ParseInt32(value => Game_Balloon_Balloon_Number_Scale = value);
                             }
 
-#endregion
-#region Effects
+                            #endregion
+                            #region Effects
                             else if (strCommand == nameof(Game_Effect_Roll_StartPoint_X))
                             {
                                 Game_Effect_Roll_StartPoint_X = strParam.Split(',').Select(int.Parse).ToArray();
@@ -1985,8 +1980,8 @@ namespace TJAPlayer3
                             {
                                 Game_Effect_FireWorks_Timing = int.Parse(strParam);
                             }
-#endregion
-#region Runner
+                            #endregion
+                            #region Runner
                             else if (strCommand == "Game_Runner_Size")
                             {
                                 string[] strSplit = strParam.Split(',');
@@ -2026,8 +2021,8 @@ namespace TJAPlayer3
                                     Game_Runner_Timer = int.Parse(strParam);
                                 }
                             }
-#endregion
-#region Dan_C
+                            #endregion
+                            #region Dan_C
                             else if (strCommand == nameof(Game_DanC_Title_ForeColor))
                             {
                                 Game_DanC_Title_ForeColor = ColorTranslator.FromHtml(strParam);
@@ -2127,8 +2122,8 @@ namespace TJAPlayer3
                                 Game_DanC_Dan_Plate = strParam.Split(',').Select(int.Parse).ToArray();
                             }
 
-#endregion
-#region PuchiChara
+                            #endregion
+                            #region PuchiChara
                             else if (strCommand == nameof(Game_PuchiChara_X))
                             {
                                 Game_PuchiChara_X = strParam.Split(',').Select(int.Parse).ToArray();
@@ -2165,9 +2160,9 @@ namespace TJAPlayer3
                             {
                                 Game_PuchiChara_SineTimer = double.Parse(strParam);
                             }
-#endregion
-#endregion
-#region Result
+                            #endregion
+                            #endregion
+                            #region Result
                             else if (strCommand == nameof(Result_MusicName_X))
                             {
                                 Result_MusicName_X = int.Parse(strParam);
@@ -2258,8 +2253,8 @@ namespace TJAPlayer3
                                 Result_Dan_Plate_XY = strParam.Split(',').Select(int.Parse).ToArray();
                             }
 
-#endregion
-#region Font
+                            #endregion
+                            #region Font
                             else if (strCommand == nameof(Font_Edge_Ratio)) //Config画面や簡易メニューのフォントについて(rhimm)
                             {
                                 if (int.Parse(strParam) > 0)
@@ -2278,8 +2273,8 @@ namespace TJAPlayer3
                             {
                                 Text_Correction_Y = int.Parse(strParam);
                             }
-#endregion
-#endregion
+                            #endregion
+                            #endregion
                         }
                         continue;
                     }
@@ -2302,7 +2297,7 @@ namespace TJAPlayer3
             }
         }
 
-#region [ IDisposable 実装 ]
+        #region [ IDisposable 実装 ]
         //-----------------
         public void Dispose()
         {
@@ -2315,23 +2310,23 @@ namespace TJAPlayer3
             }
         }
         //-----------------
-#endregion
+        #endregion
 
 
         // その他
 
-#region [ private ]
+        #region [ private ]
         //-----------------
         private bool bDisposed済み;
         //-----------------
-#endregion
+        #endregion
 
-#region 背景(スクロール)
+        #region 背景(スクロール)
         public int[] Background_Scroll_Y = new int[] { 0, 536 };
-#endregion
+        #endregion
 
 
-#region[ 座標 ]
+        #region[ 座標 ]
         //2017.08.11 kairera0467 DP実用化に向けてint配列に変更
 
         //フィールド位置　Xは判定枠部分の位置。Yはフィールドの最上部の座標。
@@ -2413,7 +2408,7 @@ namespace TJAPlayer3
         public int nResultGaugeBaseP2Y = 122;
         public int nResultGaugeBodyP1X = 559;
         public int nResultGaugeBodyP1Y = 125;
-#endregion
+        #endregion
 
         public enum RollColorMode
         {
@@ -2428,17 +2423,17 @@ namespace TJAPlayer3
             Right
         }
 
-#region 新・SkinConfig
-#region General
+        #region 新・SkinConfig
+        #region General
         public string Skin_Name = "Unknown";
         public string Skin_Version = "Unknown";
         public string Skin_Creator = "Unknown";
-#endregion
-#region Config
+        #endregion
+        #region Config
         public int Config_ItemText_Correction_X = 0;
         public int Config_ItemText_Correction_Y = 0;
-#endregion
-#region SongSelect
+        #endregion
+        #region SongSelect
         public int SongSelect_Overall_Y = 123;
         public int[] SongSelect_NamePlate_X = new int[] { 60, 950 };
         public int[] SongSelect_NamePlate_Y = new int[] { 650, 650 };
@@ -2465,8 +2460,8 @@ namespace TJAPlayer3
         public int SongSelect_CorrectionX_Chara_Value = 0;
         public int SongSelect_CorrectionY_Chara_Value = 0;
         public string[] SongSelect_Rotate_Chara = { "ここに90℃回転させたい文字をカンマで区切って記入" };
-#endregion
-#region SongLoading
+        #endregion
+        #region SongLoading
         public int SongLoading_Plate_X = 640;
         public int SongLoading_Plate_Y = 360;
         public int SongLoading_Title_X = 640;
@@ -2484,13 +2479,13 @@ namespace TJAPlayer3
         public Color SongLoading_SubTitle_BackColor = ColorTranslator.FromHtml("#000000");
         public bool SongLoading_Plate_ScreenBlend = true;
 
-#endregion
-#region Game
+        #endregion
+        #region Game
         public bool Game_Notes_Anime = false;
         public string Game_StageText = "1曲目";
         public RollColorMode Game_RollColorMode = RollColorMode.All;
         public bool Game_JudgeFrame_AddBlend = true;
-#region Chara
+        #region Chara
         public int[] Game_Chara_X = new int[] { 0, 0 };
         public int[] Game_Chara_Y = new int[] { 0, 537 };
         public int[] Game_Chara_Balloon_X = new int[] { 240, 240, 0, 0 };
@@ -2516,25 +2511,25 @@ namespace TJAPlayer3
         public int Game_Chara_Balloon_Timer = 28;
         public int Game_Chara_Balloon_Delay = 500;
         public int Game_Chara_Balloon_FadeOut = 84;
-#endregion
-#region Dancer
+        #endregion
+        #region Dancer
         public int[] Game_Dancer_X = new int[] { 640, 430, 856, 215, 1070 };
         public int[] Game_Dancer_Y = new int[] { 500, 500, 500, 500, 500 };
         public string Game_Dancer_Motion = "0";
         public int Game_Dancer_Ptn = 0;
         public int Game_Dancer_Beat = 8;
         public int[] Game_Dancer_Gauge = new int[] { 0, 20, 40, 60, 80 };
-#endregion
-#region Mob
+        #endregion
+        #region Mob
         public int Game_Mob_Ptn = 0;
         public int Game_Mob_Beat,
             Game_Mob_Ptn_Beat = 1;
-#endregion
-#region CourseSymbol
+        #endregion
+        #region CourseSymbol
         public int[] Game_CourseSymbol_X = new int[] { 64, 64 };
         public int[] Game_CourseSymbol_Y = new int[] { 232, 432 };
-#endregion
-#region PanelFont
+        #endregion
+        #region PanelFont
         public int Game_MusicName_X = 1254;
         public int Game_MusicName_Y = 14;
         public int Game_MusicName_FontSize = 30;
@@ -2554,8 +2549,8 @@ namespace TJAPlayer3
         public Color Game_StageText_BackColor = ColorTranslator.FromHtml("#000000");
         public Color Game_Lyric_BackColor = ColorTranslator.FromHtml("#0000FF");
 
-#endregion
-#region Score
+        #endregion
+        #region Score
         public int[] Game_Score_X = new int[] { 20, 20, 0, 0 };
         public int[] Game_Score_Y = new int[] { 226, 530, 0, 0 };
         public int[] Game_Score_Add_X = new int[] { 20, 20, 0, 0 };
@@ -2564,8 +2559,8 @@ namespace TJAPlayer3
         public int[] Game_Score_AddBonus_Y = new int[] { 136, 626, 0, 0 };
         public int Game_Score_Padding = 20;
         public int[] Game_Score_Size = new int[] { 24, 40 };
-#endregion
-#region Taiko
+        #endregion
+        #region Taiko
         public int[] Game_Taiko_NamePlate_X = new int[] { 0, 0 };
         public int[] Game_Taiko_NamePlate_Y = new int[] { 288, 368 };
         public int[] Game_Taiko_PlayerNumber_X = new int[] { 4, 4 };
@@ -2586,12 +2581,12 @@ namespace TJAPlayer3
         public int[] Game_Taiko_Combo_Text_Y = new int[] { 295, 472 };
         public int[] Game_Taiko_Combo_Text_Size = new int[] { 100, 50 };
         public bool Game_Taiko_Combo_Ex_IsJumping = true;
-#endregion
-#region Gauge
+        #endregion
+        #region Gauge
         public int Game_Gauge_Rainbow_Ptn;
         public int Game_Gauge_Rainbow_Timer = 50;
-#endregion
-#region Balloon
+        #endregion
+        #region Balloon
         public int[] Game_Balloon_Combo_X = new int[] { 253, 253 };
         public int[] Game_Balloon_Combo_Y = new int[] { -11, 498 };
         public int[] Game_Balloon_Combo_Number_X = new int[] { 312, 312 };
@@ -2617,8 +2612,8 @@ namespace TJAPlayer3
         public int Game_Balloon_Number_Padding = 60;
         public float Game_Balloon_Roll_Number_Scale = 1.000f;
         public float Game_Balloon_Balloon_Number_Scale = 0.879f;
-#endregion
-#region Effects
+        #endregion
+        #region Effects
         public int[] Game_Effect_Roll_StartPoint_X = new int[] { 56, -10, 200, 345, 100, 451, 600, 260, -30, 534, 156, 363 };
         public int[] Game_Effect_Roll_StartPoint_Y = new int[] { 720 };
         public int[] Game_Effect_Roll_StartPoint_1P_X = new int[] { 56, -10, 200, 345, 100, 451, 600, 260, -30, 534, 156, 363 };
@@ -2658,16 +2653,16 @@ namespace TJAPlayer3
         public bool Game_Effect_Fire_AddBlend = true;
         public bool Game_Effect_GoGoSplash_AddBlend = true;
         public int Game_Effect_FireWorks_Timing = 8;
-#endregion
-#region Runner
+        #endregion
+        #region Runner
         public int[] Game_Runner_Size = new int[] { 60, 125 };
         public int Game_Runner_Ptn = 48;
         public int Game_Runner_Type = 4;
         public int[] Game_Runner_StartPoint_X = new int[] { 175, 175 };
         public int[] Game_Runner_StartPoint_Y = new int[] { 40, 560 };
         public int Game_Runner_Timer = 16;
-#endregion
-#region PuchiChara
+        #endregion
+        #region PuchiChara
         public int[] Game_PuchiChara_X = new int[] { 100, 100 };
         public int[] Game_PuchiChara_Y = new int[] { 140, 600 };
         public int[] Game_PuchiChara_BalloonX = new int[] { 300, 300 };
@@ -2677,8 +2672,8 @@ namespace TJAPlayer3
         public int Game_PuchiChara_Sine = 20;
         public int Game_PuchiChara_Timer = 4800;
         public double Game_PuchiChara_SineTimer = 2;
-#endregion
-#region Dan-C
+        #endregion
+        #region Dan-C
         public Color Game_DanC_Title_ForeColor = ColorTranslator.FromHtml("#FFFFFF");
         public Color Game_DanC_Title_BackColor = ColorTranslator.FromHtml("#000000");
         public Color Game_DanC_SubTitle_ForeColor = ColorTranslator.FromHtml("#FFFFFF");
@@ -2701,9 +2696,9 @@ namespace TJAPlayer3
         public int[] Game_DanC_ExamUnit_Size = new int[] { 30, 36 };
         public int[] Game_DanC_Exam_Offset = new int[] { 932, 17 };
         public int[] Game_DanC_Dan_Plate = new int[] { 149, 416 };
-#endregion
-#endregion
-#region Result
+        #endregion
+        #endregion
+        #region Result
         public int Result_MusicName_X = 1254;
         public int Result_MusicName_Y = 6;
         public int Result_MusicName_FontSize = 30;
@@ -2726,13 +2721,13 @@ namespace TJAPlayer3
         public int[] Result_Dan = new int[] { 500, 500 };
         public int[] Result_Dan_XY = new int[] { 100, 0 };
         public int[] Result_Dan_Plate_XY = new int[] { 149, 416 };
-#endregion
-#region Font
+        #endregion
+        #region Font
         public int Font_Edge_Ratio = 30;
         public int Font_Edge_Ratio_Vertical = 30;
         public int Text_Correction_X = 0;
         public int Text_Correction_Y = 0;
-#endregion
-#endregion
+        #endregion
+        #endregion
     }
 }
