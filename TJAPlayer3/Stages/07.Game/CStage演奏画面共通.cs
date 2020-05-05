@@ -355,7 +355,8 @@ namespace TJAPlayer3
             }
 
             this.ct制御タイマ = null;
-			listWAV.Clear();
+            TJAPlayer3.DTX.t全チップの再生停止とミキサーからの削除(); //note mod by sato
+            listWAV.Clear();
 			listWAV = null;
             listChip = null;
 			queueMixerSound.Clear();
