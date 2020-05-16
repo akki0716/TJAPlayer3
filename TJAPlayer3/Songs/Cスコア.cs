@@ -77,7 +77,8 @@ namespace TJAPlayer3
             public int ハイスコア;
             public int[] nハイスコア;
             public string strサブタイトル;
-            public int[] nレベル;
+			public string str出典;
+			public int[] nレベル;
 
 			[Serializable]
 			[StructLayout( LayoutKind.Sequential )]

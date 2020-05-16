@@ -355,7 +355,10 @@ namespace TJAPlayer3
             }
 
             this.ct制御タイマ = null;
-            TJAPlayer3.DTX.t全チップの再生停止とミキサーからの削除(); //note mod by sato
+            if (listWAV != null)
+            {
+                TJAPlayer3.DTX.t全チップの再生停止とミキサーからの削除(); //note mod by sato
+            }
             listWAV.Clear();
 			listWAV = null;
             listChip = null;
@@ -1152,13 +1155,18 @@ namespace TJAPlayer3
                         else
                             this.actScore.Add( E楽器パート.TAIKO, this.bIsAutoPlay, (long)( 360 * 1.2f ), nPlayer );
                     }
-                    // 新配点
-                    else
+                    // SYSTEM357配点
+                    else if (TJAPlayer3.DTX.nScoreModeTmp == 2)
                     {
                         if( pChip.nチャンネル番号 == 0x15 )
                             this.actScore.Add( E楽器パート.TAIKO, this.bIsAutoPlay, (long)( 100 * 1.2f ), nPlayer );
                         else
                             this.actScore.Add( E楽器パート.TAIKO, this.bIsAutoPlay, (long)( 200 * 1.2f ), nPlayer );
+                    }
+                    //BNA 1配点
+                    else if (TJAPlayer3.DTX.nScoreModeTmp == 3)
+                    {
+                        this.actScore.Add(E楽器パート.TAIKO, this.bIsAutoPlay, (long)(100), nPlayer);
                     }
                 }
                 else
@@ -1171,13 +1179,18 @@ namespace TJAPlayer3
                         else
                             this.actScore.Add( E楽器パート.TAIKO, this.bIsAutoPlay, 360L, nPlayer );
                     }
-                    // 新配点
-                    else
+                    // SYSTEM357配点
+                    else if (TJAPlayer3.DTX.nScoreModeTmp == 2)
                     {
                         if( pChip.nチャンネル番号 == 0x15 )
                             this.actScore.Add( E楽器パート.TAIKO, this.bIsAutoPlay, 100L, nPlayer );
                         else
                             this.actScore.Add( E楽器パート.TAIKO, this.bIsAutoPlay, 200L, nPlayer );
+                    }
+                    //BNA 1配点
+                    else if (TJAPlayer3.DTX.nScoreModeTmp == 3)
+                    {
+                        this.actScore.Add(E楽器パート.TAIKO, this.bIsAutoPlay, (long)(100), nPlayer);
                     }
                 }
 
@@ -1270,10 +1283,10 @@ namespace TJAPlayer3
                     TJAPlayer3.stage演奏ドラム画面.FlyingNotes.Start(3, player);
                     TJAPlayer3.stage演奏ドラム画面.Rainbow.Start( player );
                     //CDTXMania.stage演奏ドラム画面.actChipFireD.Start( 0, player );
-                    if(pChip.bGOGOTIME && !TJAPlayer3.ConfigIni.ShinuchiMode)
+                    if(pChip.bGOGOTIME && !TJAPlayer3.ConfigIni.ShinuchiMode && TJAPlayer3.DTX.nScoreModeTmp != 3)
                     {
                         this.actScore.Add(E楽器パート.TAIKO, this.bIsAutoPlay, 6000L, player);
-                    } else
+                    } else if(!pChip.bGOGOTIME && TJAPlayer3.DTX.nScoreModeTmp != 3)
                     {
                         this.actScore.Add(E楽器パート.TAIKO, this.bIsAutoPlay, 5000L, player);
                     }
@@ -1295,12 +1308,17 @@ namespace TJAPlayer3
                 }
                 else
                 {
-                    if(pChip.bGOGOTIME && !TJAPlayer3.ConfigIni.ShinuchiMode)
+                    if(pChip.bGOGOTIME && !TJAPlayer3.ConfigIni.ShinuchiMode && TJAPlayer3.DTX.nScoreModeTmp != 3)
                     {
                         this.actScore.Add(E楽器パート.TAIKO, this.bIsAutoPlay, 360L, player);
-                    } else
+                    }
+                    else if (!pChip.bGOGOTIME && TJAPlayer3.DTX.nScoreModeTmp != 3)
                     {
                         this.actScore.Add(E楽器パート.TAIKO, this.bIsAutoPlay, 300L, player);
+                    }
+                    else if (TJAPlayer3.DTX.nScoreModeTmp == 3)
+                    {
+                        this.actScore.Add(E楽器パート.TAIKO, this.bIsAutoPlay, 100L, player);
                     }
                     //CDTXMania.Skin.soundRed.t再生する();
                     this.soundRed?.t再生を開始する();
@@ -1806,7 +1824,7 @@ namespace TJAPlayer3
                 long nDiff = TJAPlayer3.DTX.nScoreDiff[ TJAPlayer3.stage選曲.n確定された曲の難易度 ];
                 long nAddScore = 0;
 
-                if( TJAPlayer3.ConfigIni.ShinuchiMode )  //2016.07.04 kairera0467 真打モード。
+                if( TJAPlayer3.ConfigIni.ShinuchiMode && TJAPlayer3.DTX.nScoreModeTmp != 3)  //2016.07.04 kairera0467 真打モード。
                 {
                     nAddScore = TJAPlayer3.DTX.nScoreInit[ 1, TJAPlayer3.stage選曲.n確定された曲の難易度 ];
                     if( nAddScore == 0 )
@@ -1833,6 +1851,36 @@ namespace TJAPlayer3
                     }
 
                     this.actScore.Add( E楽器パート.TAIKO, bIsAutoPlay, nAddScore, nPlayer );
+                }
+                if (TJAPlayer3.DTX.nScoreModeTmp == 3)  //sato BNA1配点
+                {
+                    int basicMax = 1000000;
+                    int 難易度 = TJAPlayer3.stage選曲.n確定された曲の難易度;
+                    if(難易度 >= 4)
+                    {
+                        難易度 = 3;
+                    }
+                    double temp =(basicMax / TJAPlayer3.DTX.nノーツ数[難易度]) / 10 ;
+                    nAddScore = (long)(Math.Round(temp, 0, MidpointRounding.AwayFromZero) * 10 ); 
+                    if (nAddScore == 0)
+                    {
+                        //可の時に0除算をするとエラーが発生するため、それらしい数値を自動算出する。
+                        //メモ
+                        //風船1回
+                        nAddScore = 100;
+                        //( 100万 - ( ( 風船の打数 - 風船音符の数 * 300 ) + ( 風船音符の数 * 5000 ) ) ) / ノーツ数
+                        //(最大コンボ数＋大音符数)×初項＋(風船の総打数－風船数)×300＋風船数×5000
+                        //int nBallonCount = 0;
+                        //int nBallonNoteCount = CDTXMania.DTX.n風船数[ 2 ] + CDTXMania.DTX.n風船数[ 3 ];
+                        //int test = ( 1000000 - ( ( nBallonCount - nBallonNoteCount * 300 ) + ( nBallonNoteCount * 5000 ) ) ) / ( CDTXMania.DTX.nノーツ数[ 2 ] + CDTXMania.DTX.nノーツ数[ 3 ] );
+                    }
+
+                    if (eJudgeResult == E判定.Great || eJudgeResult == E判定.Good)
+                    {
+                        nAddScore = nAddScore / 2;
+                    }
+
+                    this.actScore.Add(E楽器パート.TAIKO, bIsAutoPlay, nAddScore, nPlayer);
                 }
                 else if( TJAPlayer3.DTX.nScoreModeTmp == 2 )
                 {
@@ -1970,7 +2018,7 @@ namespace TJAPlayer3
 
                     this.actScore.Add( E楽器パート.TAIKO, bIsAutoPlay, nAddScore, nPlayer );
                 }
-                else
+                else if (TJAPlayer3.DTX.nScoreModeTmp == 0)
                 {
                     if( eJudgeResult == E判定.Perfect )
                     {

@@ -792,11 +792,11 @@ namespace TJAPlayer3
                 "スコア計算方法\n" +
                 "TYPE-A: 旧配点\n" +
                 "TYPE-B: 旧筐体配点\n" +
-                "TYPE-C: 新配点\n",
-                " \n" +
+                "TYPE-C: SYSTEM357配点\n" +
+				"TYPE-D: System BNA 1配点 \n" +
                 " \n" +
                 " ",
-                new string[] { "TYPE-A", "TYPE-B", "TYPE-C"});
+                new string[] { "TYPE-A", "TYPE-B", "TYPE-C", "TYPE-D"});
             this.list項目リスト.Add(this.iTaikoScoreMode);
 
             ShinuchiMode = new CItemToggle(nameof(ShinuchiMode), TJAPlayer3.ConfigIni.ShinuchiMode, CItemBase.Eパネル種別.通常,

@@ -1393,7 +1393,7 @@ namespace TJAPlayer3
             
 
             this.bBranchGuide = false;
-            this.nScoreMode = 2;
+            this.nScoreMode = 3;
             this.nDefaultCourse = 3;
             this.nBranchAnime = 1;
 
@@ -1876,7 +1876,7 @@ namespace TJAPlayer3
             sw.WriteLine( "; 譜面分岐のガイド表示(0:OFF, 1:ON)" );
 			sw.WriteLine( "BranchGuide={0}", this.bGraph.Drums ? 1 : 0 );
 			sw.WriteLine();
-			sw.WriteLine( "; スコア計算方法(0:旧配点, 1:旧筐体配点, 2:新配点)" );
+			sw.WriteLine("; スコア計算方法(0:旧配点, 1:旧筐体配点, 2:SYSTEM357配点 3:System BNA 1配点)");
 			sw.WriteLine( "ScoreMode={0}", this.nScoreMode );
 			sw.WriteLine();
             sw.WriteLine("; 真打モード (0:OFF, 1:ON)");

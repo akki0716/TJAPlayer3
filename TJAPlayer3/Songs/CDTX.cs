@@ -1171,6 +1171,8 @@ namespace TJAPlayer3
         public string strファイル名の絶対パス;
         public string strフォルダ名;
         public string SUBTITLE;
+        public string SOURCE;
+        //ARTISTはDTX側で既に定義されているのでここで定義しない
         public string TITLE;
         public double dbDTXVPlaySpeed;
         public double dbScrollSpeed;
@@ -1869,6 +1871,11 @@ namespace TJAPlayer3
         }
         public void t全チップの再生停止とミキサーからの削除()
         {
+            if (this.listWAV == null)
+            {
+                return;
+            }
+
             foreach (CWAV cwav in this.listWAV.Values)
             {
                 this.tWavの再生停止(cwav.n内部番号, true);
@@ -2951,8 +2958,11 @@ namespace TJAPlayer3
         }
 
         private static readonly Regex regexForPrefixingCommaStartingLinesWithZero = new Regex(@"^,", RegexOptions.Multiline | RegexOptions.Compiled);
+        
+        //note_ tjaの命令
         private static readonly Regex regexForStrippingHeadingLines = new Regex(
-            @"^(?!(TITLE|LEVEL|BPM|WAVE|OFFSET|BALLOON|EXAM1|EXAM2|EXAM3|BALLOONNOR|BALLOONEXP|BALLOONMAS|SONGVOL|SEVOL|SCOREINIT|SCOREDIFF|COURSE|STYLE|GAME|LIFE|DEMOSTART|SIDE|SUBTITLE|SCOREMODE|GENRE|MOVIEOFFSET|BGIMAGE|BGMOVIE|HIDDENBRANCH|GAUGEINCR|#HBSCROLL|#BMSCROLL)).+\n",
+            @"^(?!(TITLE|LEVEL|BPM|WAVE|OFFSET|BALLOON|EXAM1|EXAM2|EXAM3|BALLOONNOR|BALLOONEXP|BALLOONMAS|SONGVOL|SEVOL|SCOREINIT|SCOREDIFF|COURSE|STYLE|GAME|LIFE|DEMOSTART|SIDE|SUBTITLE|SCOREMODE|GENRE|MOVIEOFFSET|BGIMAGE|BGMOVIE|HIDDENBRANCH|GAUGEINCR|#HBSCROLL|#BMSCROLL
+            ||ARTIST||SOURCE)).+\n",
             RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
@@ -4526,6 +4536,15 @@ namespace TJAPlayer3
                     this.SUBTITLE = subTitle.Substring(10);
                 }
             }
+            if (strCommandName.Equals("ARTIST"))
+            {
+                int hoge = 3;
+                this.ARTIST = strArray[1];
+            }
+            if (strCommandName.Equals("SOURCE"))
+            {
+                this.SOURCE = strArray[1];
+            }
             else if (strCommandName.Equals("LEVEL"))
             {
                 var level = (int)Convert.ToDouble(strCommandParam);
@@ -4876,6 +4895,9 @@ namespace TJAPlayer3
                 }
             }
 
+            bool ignoreEditLevel = true;
+            
+
             switch (str)
             {
                 case "0":
@@ -4887,6 +4909,10 @@ namespace TJAPlayer3
                 case "3":
                     return 3;
                 case "4":
+                    if (ignoreEditLevel)//mod by sato editを強制的におに扱い
+                    {
+                        return 3;
+                    }
                     return 4;
                 case "5":
                     return 5;

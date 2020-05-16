@@ -615,7 +615,7 @@ namespace TJAPlayer3
 					//    str[1, 1] = "";
 					//    break;
 					case 1:
-						str[ 0, 0 ] = "ドラムの演奏に関する項目を設定します。";
+						str[ 0, 0 ] = "太鼓の演奏に関する項目を設定します。";
 						str[ 0, 1 ] = "";
 						str[ 1, 0 ] = "Settings to play the drums.";
 						str[ 1, 1 ] = "";

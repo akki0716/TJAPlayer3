@@ -93,7 +93,8 @@ namespace TJAPlayer3
                     this.list進行文字列.Add("");
                     this.list進行文字列.Add("TJAPlayer3 forked TJAPlayer2 forPC(kairera0467)");
                     this.list進行文字列.Add("TJAPlayer3 edited by AioiLight(@aioilight)");
-                    this.list進行文字列.Add("");
+					this.list進行文字列.Add("TJAPlayer3 mod by sato");
+					this.list進行文字列.Add("");
 
                     es = new CEnumSongs();
 					es.StartEnumFromCache();										// 曲リスト取得(別スレッドで実行される)
